@@ -7,9 +7,6 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface MatchRepository : MongoRepository<MatchDocument, String> {
-  @Query("{ game_id: ?0, region: '?1' }")
-  fun findByGame_IdAndRegion(gameId: Long, region: String): MatchDocument?
-
   @ExistsQuery("{ game_id: ?0, region: '?1' }")
   fun existsByGameId(gameId: Long, region: String): Boolean
 }
