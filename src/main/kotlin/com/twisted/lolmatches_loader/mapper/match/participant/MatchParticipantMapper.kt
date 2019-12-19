@@ -74,6 +74,8 @@ private fun mapInstance(match: Match, matchFrames: MatchTimeline, summoner: Summ
   return MatchParticipant(
           summoner = mapSummoner(summoner),
           championId = participant.championId,
+          lane = participant.timeline.lane,
+          role = participant.timeline.role,
           spell1Id = participant.spell1Id,
           spell2Id = participant.spell2Id,
           teamId = participant.teamId,
