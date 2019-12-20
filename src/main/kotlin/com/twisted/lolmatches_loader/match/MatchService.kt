@@ -106,9 +106,9 @@ class MatchService(
     val matchesDetails = getAllMatchesDetails(loadingMatches, region)
     try {
       loadAllMatches(matchesDetails, region)
-      setMatchLoadingStatus(matchLoading.id, healthy = true)
+      setMatchLoadingStatus(id = matchLoading.id, healthy = true)
     } catch (e: Exception) {
-      setMatchLoadingStatus(matchLoading.id, healthy = false)
+      setMatchLoadingStatus(id = matchLoading.id, healthy = false)
     }
   }
 
