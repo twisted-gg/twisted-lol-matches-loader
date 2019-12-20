@@ -10,7 +10,6 @@ interface MatchLoadingRepository : MongoRepository<MatchLoadingDocument, String>
   @Query("{ matches: { \$elemMatch: { game_id: ?0 } }, region: \"?1\" }")
   fun findMatch(game_id: Long, region: String): List<MatchLoadingDocument>
 
-  fun findOneByLoading(loading: Boolean = true): MatchLoadingDocument?
-
-  fun findByLoading(loading: Boolean = true): List<MatchLoadingDocument>
+  @Query("{ healthy: false, \"matches.loading\": true }")
+  fun findUnhealthy(healthy: Boolean = false): MatchLoadingDocument?
 }

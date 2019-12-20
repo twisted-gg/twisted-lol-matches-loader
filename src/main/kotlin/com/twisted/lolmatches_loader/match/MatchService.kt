@@ -7,7 +7,6 @@ import com.twisted.lolmatches_loader.entity.match_loading.MatchLoadingDocument
 import com.twisted.lolmatches_loader.entity.match_loading.MatchLoadingRepository
 import com.twisted.lolmatches_loader.mapper.match.matchToDocument
 import com.twisted.lolmatches_loader.riot.RiotService
-import com.twisted.lolmatches_loader.summoners.dto.SummonerDto
 import net.rithms.riot.api.endpoints.match.dto.Match
 import net.rithms.riot.api.endpoints.match.dto.MatchTimeline
 import net.rithms.riot.api.request.AsyncRequest
@@ -22,15 +21,6 @@ class MatchService(
         private val loadingRepository: MatchLoadingRepository
 ) {
   // Internal methods
-  private fun allMatchesAreLoaded(loadingMatch: MatchLoadingDocument): Boolean {
-    for (match in loadingMatch.matches) {
-      if (match.loading) {
-        return false
-      }
-    }
-    return true
-  }
-
   private fun setLoadedMatch(match: MatchDocument) {
     val matchesLoading = loadingRepository.findMatch(match.game_id, match.region)
     for (matchLoading in matchesLoading) {
@@ -44,19 +34,12 @@ class MatchService(
     }
   }
 
-  private fun updateMatchLoadingStatus(id: String) {
-    try {
-      val matchLoading = loadingRepository.findById(id).get()
-      matchLoading.loading = !allMatchesAreLoaded(matchLoading)
-      loadingRepository.save(matchLoading)
-    } catch (e: Exception) {
-    }
-  }
-
-  fun existsByGameIdAndRegion(gameId: Long, region: Platform) = repository.existsByGameId(
+  private fun existsByGameIdAndRegion(gameId: Long, region: Platform) = repository.existsByGameId(
           gameId = gameId,
           region = region.toString()
   )
+
+  private fun filterMatches(matchLoading: MatchLoadingDocument): List<MatchLoadingMatches> = matchLoading.matches.filter { m -> m.loading }
 
   // External api methods
   private fun getMatchesTimeline(matchList: List<Match>, region: Platform): Map<Long, MatchTimeline> {
@@ -108,21 +91,15 @@ class MatchService(
   }
 
   // Public methods
-  fun loadMatches(matchLoading: MatchLoadingDocument, summoner: SummonerDto) {
+  fun loadMatches(matchLoading: MatchLoadingDocument) {
     val region = riotApi.parseRegion(matchLoading.region)
-    val loadingMatches = matchLoading.matches.filter { m -> m.loading }
+    val loadingMatches = filterMatches(matchLoading)
     val matchesDetails = getAllMatchesDetails(loadingMatches, region)
     loadAllMatches(matchesDetails, region)
-    updateMatchLoadingStatus(matchLoading.id)
   }
 
-  fun isLoadedMatchLoading(matchLoading: MatchLoadingDocument): Boolean {
-    val region = riotApi.parseRegion(matchLoading.region)
-    for (match in matchLoading.matches) {
-      if (!existsByGameIdAndRegion(match.game_id, region)) {
-        return false
-      }
-    }
-    return true
+  fun loadMatchesById(id: String) {
+    val match = loadingRepository.findById(id).get()
+    loadMatches(match)
   }
 }
