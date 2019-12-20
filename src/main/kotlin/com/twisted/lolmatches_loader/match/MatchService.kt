@@ -12,6 +12,7 @@ import net.rithms.riot.api.endpoints.match.dto.MatchTimeline
 import net.rithms.riot.api.request.AsyncRequest
 import net.rithms.riot.api.request.RequestAdapter
 import net.rithms.riot.constant.Platform
+import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Component
 
 @Component
@@ -91,6 +92,7 @@ class MatchService(
   }
 
   // Public methods
+  @Async
   fun loadMatches(matchLoading: MatchLoadingDocument) {
     val region = riotApi.parseRegion(matchLoading.region)
     val loadingMatches = filterMatches(matchLoading)
