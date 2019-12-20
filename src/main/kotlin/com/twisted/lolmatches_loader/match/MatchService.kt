@@ -15,6 +15,7 @@ import net.rithms.riot.constant.Platform
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Component
 
+
 @Component
 class MatchService(
         private val riotApi: RiotService,
@@ -102,6 +103,8 @@ class MatchService(
 
   fun loadMatchesById(id: String) {
     val match = loadingRepository.findById(id).get()
-    loadMatches(match)
+    Thread(Runnable {
+      loadMatches(match)
+    }).start()
   }
 }
