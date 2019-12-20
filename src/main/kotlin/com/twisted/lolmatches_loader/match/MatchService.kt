@@ -92,13 +92,23 @@ class MatchService(
     return matches.size
   }
 
+  private fun setMatchLoadingStatus(id: String, healthy: Boolean) {
+    val instance = loadingRepository.findById(id).get()
+    instance.healthy = healthy
+    loadingRepository.save(instance)
+  }
+
   // Public methods
   @Async
   fun loadMatches(matchLoading: MatchLoadingDocument) {
     val region = riotApi.parseRegion(matchLoading.region)
     val loadingMatches = filterMatches(matchLoading)
     val matchesDetails = getAllMatchesDetails(loadingMatches, region)
-    loadAllMatches(matchesDetails, region)
+    try {
+      loadAllMatches(matchesDetails, region)
+    } catch (e: Exception) {
+      setMatchLoadingStatus(matchLoading.id, false)
+    }
   }
 
   fun loadMatchesById(id: String) {
