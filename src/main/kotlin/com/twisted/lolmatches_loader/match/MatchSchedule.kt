@@ -10,8 +10,13 @@ class MatchSchedule(
         private val service: MatchService
 ) {
   @Scheduled(fixedRate = 5000)
-  fun findMatchToLoad() {
-    val match = loadingRepository.findUnhealthy() ?: return
-    service.loadMatches(match)
-  }
+  fun findMatchToLoad() =
+          try {
+            val match = loadingRepository.findOneHealthy().findFirst().get()
+            service.loadMatches(match)
+          } catch (e: NoSuchElementException) {
+            // Ignore when result is not found
+          } catch (e: Exception) {
+            throw e
+          }
 }
