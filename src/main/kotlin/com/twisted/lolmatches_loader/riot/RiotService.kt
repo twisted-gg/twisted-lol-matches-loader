@@ -3,18 +3,19 @@ package com.twisted.lolmatches_loader.riot
 import com.twisted.lolmatches_loader.summoners.dto.ListRegions
 import net.rithms.riot.api.ApiConfig
 import net.rithms.riot.api.RiotApi
+import net.rithms.riot.api.endpoints.match.dto.Match
+import net.rithms.riot.api.endpoints.match.dto.MatchTimeline
 import net.rithms.riot.constant.Platform
+import org.springframework.cache.annotation.CacheConfig
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Component
 
 const val MAX_THREADS = 4
 
 @Component
+@CacheConfig(cacheNames = ["import"], cacheManager = "cacheManager", keyGenerator = "keyGenerator")
 class RiotService {
   private val apiKey = System.getenv("API_KEY") ?: ""
-
-  fun parseRegion(value: ListRegions): Platform {
-    return parseRegion(value.toString())
-  }
 
   fun parseRegion(value: String): Platform {
     var region: Platform
@@ -34,5 +35,9 @@ class RiotService {
     return RiotApi(config)
   }
 
-  fun getAsynApi() = getApi().asyncApi ?: throw Exception()
+  @Cacheable(unless = "#result == null")
+  fun getMatchDetails(game_id: Long, region: Platform): Match = getApi().getMatch(region, game_id)
+
+  @Cacheable(unless = "#result == null")
+  fun getMatchTimeline(game_id: Long, region: Platform): MatchTimeline = getApi().getTimelineByMatchId(region, game_id)
 }

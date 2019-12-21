@@ -18,6 +18,8 @@ repositories {
 }
 
 dependencies {
+	implementation("com.google.guava:guava:27.0-jre")
+	implementation("org.springframework.boot:spring-boot-starter-data-redis")
 	implementation("com.twisted:twisted-lol-matches-dto:0.0.0")
 	implementation("com.github.taycaldwell:riot-api-java:4.3.0")
 	implementation("org.springframework.boot:spring-boot-starter-data-mongodb")

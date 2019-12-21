@@ -1,16 +1,11 @@
 package com.twisted.lolmatches_loader.match
 
 import com.twisted.dto.match_loading.MatchLoadingMatches
-import com.twisted.lolmatches_loader.entity.match.MatchDocument
 import com.twisted.lolmatches_loader.entity.match.MatchRepository
 import com.twisted.lolmatches_loader.entity.match_loading.MatchLoadingDocument
 import com.twisted.lolmatches_loader.entity.match_loading.MatchLoadingRepository
 import com.twisted.lolmatches_loader.mapper.match.matchToDocument
 import com.twisted.lolmatches_loader.riot.RiotService
-import net.rithms.riot.api.endpoints.match.dto.Match
-import net.rithms.riot.api.endpoints.match.dto.MatchTimeline
-import net.rithms.riot.api.request.AsyncRequest
-import net.rithms.riot.api.request.RequestAdapter
 import net.rithms.riot.constant.Platform
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Component
@@ -22,8 +17,6 @@ class MatchService(
         private val repository: MatchRepository,
         private val loadingRepository: MatchLoadingRepository
 ) {
-  private val api = riotApi.getApi()
-
   // Internal methods
   private fun setLoadedMatch(game_id: Long, region: Platform) {
     val matchesLoading = loadingRepository.findMatch(game_id, region.toString())
@@ -57,8 +50,8 @@ class MatchService(
       val gameId = match.game_id
       val exists = existsByGameIdAndRegion(gameId, region)
       if (!exists) {
-        val matchDetails = getMatchDetails(gameId, region)
-        val matchTimeline = getMatchTimeline(gameId, region)
+        val matchDetails = riotApi.getMatchDetails(gameId, region)
+        val matchTimeline = riotApi.getMatchTimeline(gameId, region)
         repository.save(matchToDocument(
                 match = matchDetails,
                 matchTimeline = matchTimeline
@@ -67,11 +60,6 @@ class MatchService(
       setLoadedMatch(gameId, region)
     }
   }
-
-  // External methods
-  private fun getMatchDetails(game_id: Long, region: Platform) = api.getMatch(region, game_id)
-
-  private fun getMatchTimeline(game_id: Long, region: Platform) = api.getTimelineByMatchId(region, game_id)
 
   // Public methods
   @Async
