@@ -8,6 +8,7 @@ import com.twisted.lolmatches_loader.mapper.match.participant.events.matchPartic
 import com.twisted.lolmatches_loader.mapper.match.participant.frames.matchParticipantFrames
 import com.twisted.lolmatches_loader.mapper.match.participant.items.participantItems
 import com.twisted.lolmatches_loader.mapper.match.participant.perks.participantPerks
+import com.twisted.lolmatches_loader.mapper.match.participant.spells.getParticipantSpells
 import com.twisted.lolmatches_loader.mapper.match.participant.stats.participantStats
 import com.twisted.lolmatches_loader.summoners.SummonersService
 import com.twisted.lolmatches_loader.summoners.dto.GetSummonerDto
@@ -40,7 +41,6 @@ private fun mapSummoner(summoner: SummonerDto): MatchParticipantSummoner =
         MatchParticipantSummoner(
                 _id = ObjectId(summoner._id),
                 name = summoner.name,
-                puuid = summoner.puuid,
                 level = summoner.summonerLevel
         )
 
@@ -71,14 +71,14 @@ private fun mapInstance(match: Match, matchFrames: MatchTimeline, summoner: Summ
           frames = matchFrames.frames,
           participantId = participantId
   )
+  val spells = getParticipantSpells(participant)
   return MatchParticipant(
           summoner = mapSummoner(summoner),
           championId = participant.championId,
           lane = participant.timeline.lane,
           role = participant.timeline.role,
-          spell1Id = participant.spell1Id,
-          spell2Id = participant.spell2Id,
           teamId = participant.teamId,
+          spells = spells,
           stats = participantStats(participant.stats),
           items = participantItems(participant.stats),
           perks = participantPerks(participant.stats),

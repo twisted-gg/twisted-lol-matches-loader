@@ -8,8 +8,6 @@ import net.rithms.riot.api.endpoints.match.dto.ParticipantStats
  */
 fun participantStats(stats: ParticipantStats): MatchParticipantStats {
   return MatchParticipantStats(
-          altarsCaptured = stats.altarsCaptured,
-          altarsNeutralized = stats.altarsNeutralized,
           champLevel = stats.champLevel,
           combatPlayerScore = stats.combatPlayerScore,
           damageDealtToObjectives = stats.damageDealtToObjectives,
@@ -36,10 +34,6 @@ fun participantStats(stats: ParticipantStats): MatchParticipantStats {
           neutralMinionsKilled = stats.neutralMinionsKilled,
           neutralMinionsKilledEnemyJungle = stats.neutralMinionsKilledEnemyJungle,
           neutralMinionsKilledTeamJungle = stats.neutralMinionsKilledTeamJungle,
-          nodeCapture = stats.nodeCapture,
-          nodeCaptureAssist = stats.nodeCaptureAssist,
-          nodeNeutralize = stats.nodeNeutralize,
-          nodeNeutralizeAssist = stats.nodeNeutralizeAssist,
           objectivePlayerScore = stats.objectivePlayerScore,
           participantId = stats.participantId,
           pentaKills = stats.pentaKills,
@@ -68,21 +62,6 @@ fun participantStats(stats: ParticipantStats): MatchParticipantStats {
           visionScore = stats.visionScore,
           visionWardsBoughtInGame = stats.visionWardsBoughtInGame,
           wardsKilled = stats.wardsKilled,
-          wardsPlaced = stats.wardsPlaced,
-          playerScore0 = stats.playerScore0.toInt(),
-          playerScore1 = stats.playerScore1.toInt(),
-          playerScore2 = stats.playerScore2.toInt(),
-          playerScore3 = stats.playerScore3.toInt(),
-          playerScore4 = stats.playerScore4.toInt(),
-          playerScore5 = stats.playerScore5.toInt(),
-          playerScore6 = stats.playerScore6.toInt(),
-          playerScore7 = stats.playerScore7.toInt(),
-          playerScore8 = stats.playerScore8.toInt(),
-          playerScore9 = stats.playerScore9.toInt(),
-          perkPrimaryStyle = stats.perkPrimaryStyle,
-          perkSubStyle = stats.perkSubStyle,
-          statPerk0 = stats.statPerk0,
-          statPerk1 = stats.statPerk1,
-          statPerk2 = stats.statPerk2
+          wardsPlaced = stats.wardsPlaced
   )
 }

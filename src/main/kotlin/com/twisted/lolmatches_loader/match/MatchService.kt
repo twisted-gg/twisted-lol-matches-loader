@@ -1,11 +1,16 @@
 package com.twisted.lolmatches_loader.match
 
 import com.twisted.dto.match_loading.MatchLoadingMatches
+import com.twisted.lolmatches_loader.entity.match.MatchDocument
 import com.twisted.lolmatches_loader.entity.match.MatchRepository
 import com.twisted.lolmatches_loader.entity.match_loading.MatchLoadingDocument
 import com.twisted.lolmatches_loader.entity.match_loading.MatchLoadingRepository
 import com.twisted.lolmatches_loader.mapper.match.matchToDocument
 import com.twisted.lolmatches_loader.riot.RiotService
+import net.rithms.riot.api.endpoints.match.dto.Match
+import net.rithms.riot.api.endpoints.match.dto.MatchTimeline
+import net.rithms.riot.api.request.AsyncRequest
+import net.rithms.riot.api.request.RequestAdapter
 import net.rithms.riot.constant.Platform
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Component
