@@ -5,6 +5,7 @@ import net.rithms.riot.api.ApiConfig
 import net.rithms.riot.api.RiotApi
 import net.rithms.riot.api.endpoints.match.dto.Match
 import net.rithms.riot.api.endpoints.match.dto.MatchTimeline
+import net.rithms.riot.api.request.ratelimit.RateLimitException
 import net.rithms.riot.constant.Platform
 import org.springframework.cache.annotation.CacheConfig
 import org.springframework.cache.annotation.Cacheable
@@ -16,6 +17,11 @@ const val MAX_THREADS = 4
 @CacheConfig(cacheNames = ["import"], cacheManager = "cacheManager", keyGenerator = "keyGenerator")
 class RiotService {
   private val apiKey = System.getenv("API_KEY") ?: ""
+
+  private fun waitRateLimit(rateLimitException: RateLimitException) {
+    val seconds = (rateLimitException.retryAfter * 1000).toLong()
+    Thread.sleep(seconds)
+  }
 
   fun parseRegion(value: String): Platform {
     var region: Platform
@@ -36,8 +42,22 @@ class RiotService {
   }
 
   @Cacheable(unless = "#result == null")
-  fun getMatchDetails(game_id: Long, region: Platform): Match = getApi().getMatch(region, game_id)
+  fun getMatchDetails(game_id: Long, region: Platform): Match {
+    return try {
+      getApi().getMatch(region, game_id)
+    } catch (e: RateLimitException) {
+      waitRateLimit(e)
+      getMatchDetails(game_id, region)
+    }
+  }
 
   @Cacheable(unless = "#result == null")
-  fun getMatchTimeline(game_id: Long, region: Platform): MatchTimeline = getApi().getTimelineByMatchId(region, game_id)
+  fun getMatchTimeline(game_id: Long, region: Platform): MatchTimeline {
+    return try {
+      getApi().getTimelineByMatchId(region, game_id)
+    } catch (e: RateLimitException) {
+      waitRateLimit(e)
+      getMatchTimeline(game_id, region)
+    }
+  }
 }
