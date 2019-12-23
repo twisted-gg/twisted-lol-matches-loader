@@ -3,14 +3,11 @@ package com.twisted.lolmatches_loader.summoners
 import com.twisted.dto.summoner.GetSummonerRequest
 import com.twisted.dto.summoner.SummonerDocument
 import com.twisted.lolmatches_loader.errors.NotFoundException
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Component
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.util.UriComponentsBuilder
 import java.util.concurrent.CompletableFuture
-
-const val ADD_MATCH_TO_SUMMONER_TYPE = "LOL"
 
 @Component
 class SummonersService {
@@ -26,22 +23,6 @@ class SummonersService {
     return CompletableFuture.supplyAsync {
       RestTemplate().getForObject<SummonerDocument>(url, SummonerDocument::class.java)
               ?: throw NotFoundException()
-    }
-  }
-
-  @Async
-  fun addMatchToSummoner(summonerId: String, match_id: Long): CompletableFuture<Unit> {
-    val url = UriComponentsBuilder.fromHttpUrl("${this.baseUrl}/match")
-            .queryParam("summoner_id", summonerId)
-            .queryParam("match_id", match_id)
-            .queryParam("type", ADD_MATCH_TO_SUMMONER_TYPE)
-            .toUriString()
-    val rest = RestTemplate()
-    rest.requestFactory = HttpComponentsClientHttpRequestFactory()
-
-    return CompletableFuture.supplyAsync {
-      rest.patchForObject(url, null, String.javaClass)
-      return@supplyAsync
     }
   }
 
