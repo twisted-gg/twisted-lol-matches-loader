@@ -4,7 +4,10 @@ import com.twisted.dto.match.participant.MatchParticipant
 import com.twisted.dto.match.participant.MatchParticipantSummoner
 import com.twisted.dto.match.participant.events.MatchParticipantEvents
 import com.twisted.dto.match.participant.stats.MatchParticipantKDA
+import com.twisted.dto.summoner.GetSummonerRequest
+import com.twisted.dto.summoner.SummonerDocument
 import com.twisted.enum.GetMapGeyFromValue
+import com.twisted.enum.common.ListRegions
 import com.twisted.enum.match.participants.MatchParticipantsLane
 import com.twisted.enum.match.participants.MatchParticipantsRole
 import com.twisted.lolmatches_loader.mapper.match.participant.events.matchParticipantEventMapper
@@ -14,9 +17,6 @@ import com.twisted.lolmatches_loader.mapper.match.participant.perks.participantP
 import com.twisted.lolmatches_loader.mapper.match.participant.spells.getParticipantSpells
 import com.twisted.lolmatches_loader.mapper.match.participant.stats.participantStats
 import com.twisted.lolmatches_loader.summoners.SummonersService
-import com.twisted.lolmatches_loader.summoners.dto.GetSummonerDto
-import com.twisted.lolmatches_loader.summoners.dto.ListRegions
-import com.twisted.lolmatches_loader.summoners.dto.SummonerDto
 import kotlinx.coroutines.runBlocking
 import net.rithms.riot.api.endpoints.match.dto.*
 import org.bson.types.ObjectId
@@ -40,7 +40,7 @@ private fun participantKDA(stats: ParticipantStats): MatchParticipantKDA {
 /**
  * Only save summoner details
  */
-private fun mapSummoner(summoner: SummonerDto): MatchParticipantSummoner =
+private fun mapSummoner(summoner: SummonerDocument): MatchParticipantSummoner =
         MatchParticipantSummoner(
                 _id = ObjectId(summoner._id),
                 name = summoner.name,
@@ -54,10 +54,10 @@ private fun getParticipantDetails(match: Match, participantId: Int): Participant
         match.participants.find { p -> p.participantId == participantId }
                 ?: throw Exception()
 
-fun getSummonerList(match: Match): List<SummonerDto> {
-  val params = mutableListOf<GetSummonerDto>()
+fun getSummonerList(match: Match): List<SummonerDocument> {
+  val params = mutableListOf<GetSummonerRequest>()
   for (participant in match.participantIdentities) {
-    params.add(GetSummonerDto(
+    params.add(GetSummonerRequest(
             region = ListRegions.valueOf(match.platformId),
             summonerName = participant.player.summonerName,
             accountID = participant.player.currentAccountId
@@ -68,7 +68,7 @@ fun getSummonerList(match: Match): List<SummonerDto> {
   }
 }
 
-private fun mapInstance(match: Match, matchFrames: MatchTimeline, summoner: SummonerDto, participantId: Int, events: MatchParticipantEvents): MatchParticipant {
+private fun mapInstance(match: Match, matchFrames: MatchTimeline, summoner: SummonerDocument, participantId: Int, events: MatchParticipantEvents): MatchParticipant {
   val participant = getParticipantDetails(match = match, participantId = participantId)
   val frames = matchParticipantFrames(
           frames = matchFrames.frames,
@@ -94,7 +94,7 @@ private fun mapInstance(match: Match, matchFrames: MatchTimeline, summoner: Summ
 /**
  * Find summoner
  */
-fun findSummonerByParticipant(participant: ParticipantIdentity, list: List<SummonerDto>) = list.find { p -> p.accountId == participant.player.currentAccountId }
+fun findSummonerByParticipant(participant: ParticipantIdentity, list: List<SummonerDocument>) = list.find { p -> p.accountId == participant.player.currentAccountId }
 
 /**
  * Get match participants

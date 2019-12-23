@@ -1,6 +1,6 @@
 package com.twisted.lolmatches_loader.riot
 
-import com.twisted.lolmatches_loader.summoners.dto.ListRegions
+import com.twisted.enum.common.ListRegions
 import net.rithms.riot.api.ApiConfig
 import net.rithms.riot.api.RiotApi
 import net.rithms.riot.api.endpoints.match.dto.Match

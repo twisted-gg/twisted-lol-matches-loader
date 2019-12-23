@@ -1,8 +1,8 @@
 package com.twisted.lolmatches_loader.summoners
 
+import com.twisted.dto.summoner.GetSummonerRequest
+import com.twisted.dto.summoner.SummonerDocument
 import com.twisted.lolmatches_loader.errors.NotFoundException
-import com.twisted.lolmatches_loader.summoners.dto.GetSummonerDto
-import com.twisted.lolmatches_loader.summoners.dto.SummonerDto
 import org.bson.types.ObjectId
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Component
@@ -16,30 +16,30 @@ class SummonersService {
   private val rest = RestTemplate()
 
   @Async
-  fun getSummoner(param: GetSummonerDto): CompletableFuture<SummonerDto> {
+  fun getSummoner(param: GetSummonerRequest): CompletableFuture<SummonerDocument> {
     val url = UriComponentsBuilder.fromHttpUrl(this.baseUrl)
             .queryParam("summonerName", param.summonerName)
             .queryParam("region", param.region)
             .queryParam("accountID", param.accountID)
             .toUriString()
     return CompletableFuture.supplyAsync {
-      this.rest.getForObject<SummonerDto>(url, SummonerDto::class.java)
+      this.rest.getForObject<SummonerDocument>(url, SummonerDocument::class.java)
               ?: throw NotFoundException()
     }
   }
 
   @Async
-  fun getSummonerById(id: ObjectId): CompletableFuture<SummonerDto> {
+  fun getSummonerById(id: ObjectId): CompletableFuture<SummonerDocument> {
     val url = UriComponentsBuilder.fromHttpUrl("${this.baseUrl}/by-id/$id")
             .toUriString()
     return CompletableFuture.supplyAsync {
-      this.rest.getForObject<SummonerDto>(url, SummonerDto::class.java)
+      this.rest.getForObject<SummonerDocument>(url, SummonerDocument::class.java)
               ?: throw NotFoundException()
     }
   }
 
-  fun getSummonerList(params: List<GetSummonerDto>): List<SummonerDto> {
-    val response = mutableListOf<CompletableFuture<SummonerDto>>()
+  fun getSummonerList(params: List<GetSummonerRequest>): List<SummonerDocument> {
+    val response = mutableListOf<CompletableFuture<SummonerDocument>>()
     for (param in params) {
       val summoner = getSummoner(param)
       response.add(summoner)

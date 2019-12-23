@@ -1,7 +1,7 @@
 package com.twisted.lolmatches_loader.mapper.match.participant.events
 
 import com.twisted.dto.match.participant.events.*
-import com.twisted.lolmatches_loader.summoners.dto.SummonerDto
+import com.twisted.dto.summoner.SummonerDocument
 import net.rithms.riot.api.endpoints.match.dto.Match
 import net.rithms.riot.api.endpoints.match.dto.MatchEvent
 import net.rithms.riot.api.endpoints.match.dto.MatchTimeline
@@ -15,7 +15,7 @@ private fun getEvents(frames: MatchTimeline, participantId: Int): List<MatchEven
                 .filter { e -> isParticipantEvent(e, participantId) }
                 .sortedBy { e -> e.timestamp }
 
-fun matchParticipantEventMapper(match: Match, participantId: Int, frames: MatchTimeline, participants: List<SummonerDto>): MatchParticipantEvents {
+fun matchParticipantEventMapper(match: Match, participantId: Int, frames: MatchTimeline, participants: List<SummonerDocument>): MatchParticipantEvents {
   val wardEvents = mutableListOf<MatchParticipantEventsWard>()
   val itemEvents = mutableListOf<MatchParticipantEventsItem>()
   val skillLevelUpEvents = mutableListOf<MatchParticipantEventsSkillLevelUp>()
