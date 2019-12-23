@@ -1,6 +1,9 @@
 package com.twisted.lolmatches_loader.mapper.match.participant.events
 
 import com.twisted.dto.match.participant.events.MatchParticipantEventsWard
+import com.twisted.enum.GetMapGeyFromValue
+import com.twisted.enum.match.participants.events.MatchParticipantsEventsType
+import com.twisted.enum.match.participants.events.MatchParticipantsEventsWardTypes
 import com.twisted.lolmatches_loader.mapper.match.MatchEventsEnum
 import net.rithms.riot.api.endpoints.match.dto.MatchEvent
 
@@ -9,7 +12,7 @@ fun isWardEvent(event: MatchEvent): Boolean =
 
 fun parseWardEvent(event: MatchEvent) =
         MatchParticipantEventsWard(
-                type = event.type,
+                type = GetMapGeyFromValue(MatchParticipantsEventsType, event.type),
                 timestamp = event.timestamp,
-                wardType = event.wardType
+                wardType = GetMapGeyFromValue(MatchParticipantsEventsWardTypes, event.wardType)
         )

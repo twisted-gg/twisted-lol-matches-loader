@@ -4,6 +4,9 @@ import com.twisted.dto.match.participant.MatchParticipant
 import com.twisted.dto.match.participant.MatchParticipantSummoner
 import com.twisted.dto.match.participant.events.MatchParticipantEvents
 import com.twisted.dto.match.participant.stats.MatchParticipantKDA
+import com.twisted.enum.GetMapGeyFromValue
+import com.twisted.enum.match.participants.MatchParticipantsLane
+import com.twisted.enum.match.participants.MatchParticipantsRole
 import com.twisted.lolmatches_loader.mapper.match.participant.events.matchParticipantEventMapper
 import com.twisted.lolmatches_loader.mapper.match.participant.frames.matchParticipantFrames
 import com.twisted.lolmatches_loader.mapper.match.participant.items.participantItems
@@ -75,8 +78,8 @@ private fun mapInstance(match: Match, matchFrames: MatchTimeline, summoner: Summ
   return MatchParticipant(
           summoner = mapSummoner(summoner),
           championId = participant.championId,
-          lane = participant.timeline.lane,
-          role = participant.timeline.role,
+          lane = GetMapGeyFromValue(MatchParticipantsLane, participant.timeline.lane),
+          role = GetMapGeyFromValue(MatchParticipantsRole, participant.timeline.role),
           teamId = participant.teamId,
           spells = spells,
           stats = participantStats(participant.stats),

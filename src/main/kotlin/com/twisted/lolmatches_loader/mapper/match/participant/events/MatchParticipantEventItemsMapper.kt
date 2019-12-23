@@ -1,6 +1,8 @@
 package com.twisted.lolmatches_loader.mapper.match.participant.events
 
 import com.twisted.dto.match.participant.events.MatchParticipantEventsItem
+import com.twisted.enum.GetMapGeyFromValue
+import com.twisted.enum.match.participants.events.MatchParticipantsEventsType
 import com.twisted.lolmatches_loader.mapper.match.MatchEventsEnum
 import net.rithms.riot.api.endpoints.match.dto.MatchEvent
 
@@ -12,7 +14,7 @@ fun isItemEvent(event: MatchEvent): Boolean =
 
 fun parseItemEvent(event: MatchEvent) =
         MatchParticipantEventsItem(
-                type = event.type,
+                type = GetMapGeyFromValue(MatchParticipantsEventsType, event.type),
                 timestamp = event.timestamp,
                 itemId = event.itemId
         )

@@ -15,9 +15,9 @@ data class MatchDocument(
         override val region: String,
         override val game_id: Long,
         override val match_break: Boolean,
-        override val creation: Date,
-        override val mode: String,
-        override val type: String,
+        override val creation: Long,
+        override val mode: Int,
+        override val type: Int,
         override val version: String,
         override val map_id: Int,
         override val queue: Int,
@@ -28,7 +28,7 @@ data class MatchDocument(
         override val participantsIds: List<ObjectId>,
         override val participants: List<MatchParticipant>,
         override val framesInterval: Long,
-        override val createdAt: Date = Date(),
-        override val updatedAt: Date = Date()
+        override val createdAt: Long = Date().time,
+        override val updatedAt: Long = Date().time
 ) : IMatchDocument
 
