@@ -7,7 +7,9 @@ import com.twisted.lolmatches_loader.entity.match_loading.MatchLoadingDocument
 import com.twisted.lolmatches_loader.entity.match_loading.MatchLoadingRepository
 import com.twisted.lolmatches_loader.mapper.match.matchToDocument
 import com.twisted.lolmatches_loader.riot.RiotService
+import com.twisted.lolmatches_loader.summoners.SummonersService
 import net.rithms.riot.constant.Platform
+import org.bson.types.ObjectId
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Component
 
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Component
 class MatchService(
         private val riotApi: RiotService,
         private val repository: MatchRepository,
+        private val summonersService: SummonersService,
         private val loadingRepository: MatchLoadingRepository
 ) {
   // Internal methods
@@ -58,16 +61,33 @@ class MatchService(
       if (!exists) {
         val matchDetails = riotApi.getMatchDetails(gameId, region)
         val matchTimeline = riotApi.getMatchTimeline(gameId, region)
-        saveDocument(matchToDocument(
+        val document = matchToDocument(
                 match = matchDetails,
                 matchTimeline = matchTimeline
-        ), region)
+        )
+        saveDocument(
+                match = document,
+                region = region
+        )
+        addMatchToSummoner(
+                game_id = document.game_id,
+                participants = document.participantsIds
+        )
       }
       setLoadedMatch(gameId, region)
     }
   }
 
   // Public methods
+  @Async
+  fun addMatchToSummoner(game_id: Long, participants: List<ObjectId>) {
+    // Parallel requests
+    participants.map { id ->
+      summonersService.addMatchToSummoner(id.toString(), game_id)
+    }
+            .map { r -> r.get() }
+  }
+
   @Async
   fun loadMatches(matchLoading: MatchLoadingDocument) {
     try {

@@ -18,6 +18,7 @@ repositories {
 }
 
 dependencies {
+	compile("org.apache.httpcomponents:httpclient:4.5.10")
 	implementation("com.google.guava:guava:27.0-jre")
 	implementation("org.springframework.boot:spring-boot-starter-data-redis")
 	implementation("com.twisted:twisted-lol-matches-dto:0.0.0")

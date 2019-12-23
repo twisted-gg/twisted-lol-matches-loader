@@ -3,17 +3,18 @@ package com.twisted.lolmatches_loader.summoners
 import com.twisted.dto.summoner.GetSummonerRequest
 import com.twisted.dto.summoner.SummonerDocument
 import com.twisted.lolmatches_loader.errors.NotFoundException
-import org.bson.types.ObjectId
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Component
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.util.UriComponentsBuilder
 import java.util.concurrent.CompletableFuture
 
+const val ADD_MATCH_TO_SUMMONER_TYPE = "LOL"
+
 @Component
 class SummonersService {
   private val baseUrl = System.getenv("SUMMONERS_SERVICE")
-  private val rest = RestTemplate()
 
   @Async
   fun getSummoner(param: GetSummonerRequest): CompletableFuture<SummonerDocument> {
@@ -23,27 +24,27 @@ class SummonersService {
             .queryParam("accountID", param.accountID)
             .toUriString()
     return CompletableFuture.supplyAsync {
-      this.rest.getForObject<SummonerDocument>(url, SummonerDocument::class.java)
+      RestTemplate().getForObject<SummonerDocument>(url, SummonerDocument::class.java)
               ?: throw NotFoundException()
     }
   }
 
   @Async
-  fun getSummonerById(id: ObjectId): CompletableFuture<SummonerDocument> {
-    val url = UriComponentsBuilder.fromHttpUrl("${this.baseUrl}/by-id/$id")
+  fun addMatchToSummoner(summonerId: String, match_id: Long): CompletableFuture<Unit> {
+    val url = UriComponentsBuilder.fromHttpUrl("${this.baseUrl}/match")
+            .queryParam("summoner_id", summonerId)
+            .queryParam("match_id", match_id)
+            .queryParam("type", ADD_MATCH_TO_SUMMONER_TYPE)
             .toUriString()
+    val rest = RestTemplate()
+    rest.requestFactory = HttpComponentsClientHttpRequestFactory()
+
     return CompletableFuture.supplyAsync {
-      this.rest.getForObject<SummonerDocument>(url, SummonerDocument::class.java)
-              ?: throw NotFoundException()
+      rest.patchForObject(url, null, String.javaClass)
+      return@supplyAsync
     }
   }
 
-  fun getSummonerList(params: List<GetSummonerRequest>): List<SummonerDocument> {
-    val response = mutableListOf<CompletableFuture<SummonerDocument>>()
-    for (param in params) {
-      val summoner = getSummoner(param)
-      response.add(summoner)
-    }
-    return response.map { v -> v.get() }
-  }
+  // Parallel requests
+  fun getSummonerList(params: List<GetSummonerRequest>) = params.map { param -> getSummoner(param) }.map { v -> v.get() }
 }
