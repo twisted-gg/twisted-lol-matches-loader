@@ -1,5 +1,6 @@
 package com.twisted.lolmatches_loader.mapper.match.participant
 
+import com.twisted.dto.errors.InvalidEnum
 import com.twisted.dto.match.participant.MatchParticipant
 import com.twisted.dto.match.participant.MatchParticipantSummoner
 import com.twisted.dto.match.participant.events.MatchParticipantEvents
@@ -121,7 +122,9 @@ fun matchParticipants(match: Match, matchFrames: MatchTimeline): List<MatchParti
             ))
           }
           response
+        } catch (e: InvalidEnum) {
+          println("Invalid enum key: ${e.message}")
+          mutableListOf()
         } catch (e: Exception) {
           mutableListOf()
         }
-
