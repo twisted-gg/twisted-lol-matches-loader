@@ -3,7 +3,7 @@ package com.twisted.lolmatches_loader.mapper.match
 import com.twisted.dto.match.team.MatchTeam
 import com.twisted.dto.match.team.MatchTeamBans
 import com.twisted.dto.match.team.MatchTeamStats
-import com.twisted.enum.GetMapGeyFromValue
+import com.twisted.enum.getMapGeyFromValue
 import com.twisted.enum.match.MatchGameMode
 import com.twisted.enum.match.MatchGameTypes
 import com.twisted.lolmatches_loader.entity.match.MatchDocument
@@ -82,8 +82,8 @@ fun matchToDocument(match: Match, matchTimeline: MatchTimeline): MatchDocument {
           game_id = match.gameId,
           creation = match.gameCreation,
           duration = match.gameDuration,
-          mode = GetMapGeyFromValue(MatchGameMode, match.gameMode),
-          type = GetMapGeyFromValue(MatchGameTypes, match.gameType),
+          mode = getMapGeyFromValue(MatchGameMode, match.gameMode),
+          type = getMapGeyFromValue(MatchGameTypes, match.gameType),
           version = match.gameVersion,
           map_id = match.mapId,
           queue = match.queueId,
