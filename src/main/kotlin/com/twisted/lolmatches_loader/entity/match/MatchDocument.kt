@@ -3,7 +3,6 @@ package com.twisted.lolmatches_loader.entity.match
 import com.twisted.dto.match.IMatchDocument
 import com.twisted.dto.match.participant.MatchParticipant
 import com.twisted.dto.match.team.MatchTeam
-import org.bson.types.ObjectId
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 import java.util.*
