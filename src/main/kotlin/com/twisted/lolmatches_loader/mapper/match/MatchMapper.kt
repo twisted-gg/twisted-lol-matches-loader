@@ -73,7 +73,6 @@ private fun matchTeams(match: Match): List<MatchTeam> {
  */
 fun matchToDocument(match: Match, matchTimeline: MatchTimeline): MatchDocument {
   val participants = matchParticipants(match, matchTimeline)
-  val participantsIds = participants.map { p -> p.summoner._id }
   val badMatch = participants.count() == 0
   return MatchDocument(
           region = match.platformId,
@@ -90,7 +89,6 @@ fun matchToDocument(match: Match, matchTimeline: MatchTimeline): MatchDocument {
           queue = match.queueId,
           season = match.seasonId,
           teams = matchTeams(match),
-          participants = participants,
-          participantsIds = participantsIds
+          participants = participants
   )
 }

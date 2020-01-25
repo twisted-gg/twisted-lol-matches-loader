@@ -2,7 +2,6 @@ package com.twisted.lolmatches_loader.mapper.match.participant
 
 import com.twisted.dto.errors.InvalidEnum
 import com.twisted.dto.match.participant.MatchParticipant
-import com.twisted.dto.match.participant.MatchParticipantSummoner
 import com.twisted.dto.match.participant.events.MatchParticipantEvents
 import com.twisted.dto.match.participant.stats.MatchParticipantKDA
 import com.twisted.dto.summoner.GetSummonerRequest
@@ -39,16 +38,6 @@ private fun participantKDA(stats: ParticipantStats): MatchParticipantKDA {
 }
 
 /**
- * Only save summoner details
- */
-private fun mapSummoner(summoner: SummonerDocument): MatchParticipantSummoner =
-        MatchParticipantSummoner(
-                _id = ObjectId(summoner._id),
-                name = summoner.name,
-                level = summoner.summonerLevel
-        )
-
-/**
  * Get participant details
  */
 private fun getParticipantDetails(match: Match, participantId: Int): Participant =
@@ -77,7 +66,7 @@ private fun mapInstance(match: Match, matchFrames: MatchTimeline, summoner: Summ
   )
   val spells = getParticipantSpells(participant)
   return MatchParticipant(
-          summoner = mapSummoner(summoner),
+          summoner = ObjectId(summoner._id),
           championId = participant.championId,
           lane = GetMapGeyFromValue(MatchParticipantsLane, participant.timeline.lane),
           role = GetMapGeyFromValue(MatchParticipantsRole, participant.timeline.role),
