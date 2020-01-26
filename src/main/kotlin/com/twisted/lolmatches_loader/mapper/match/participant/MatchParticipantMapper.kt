@@ -75,6 +75,8 @@ private fun mapInstance(match: Match, matchFrames: MatchTimeline, summoner: Summ
           stats = participantStats(participant.stats),
           items = participantItems(participant.stats),
           perks = participantPerks(participant.stats),
+          perkPrimaryStyle = participant.stats.perkPrimaryStyle,
+          perkSubStyle = participant.stats.perkSubStyle,
           kda = participantKDA(participant.stats),
           frames = frames,
           events = events
