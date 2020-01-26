@@ -12,11 +12,21 @@ import net.rithms.riot.api.endpoints.match.dto.Match
 import net.rithms.riot.api.endpoints.match.dto.MatchTimeline
 import net.rithms.riot.api.endpoints.match.dto.TeamStats
 
+private fun teamTotalChampionKills(match: Match, teamId: Int): Int {
+  val participants = match.participants.filter { p -> p.teamId == teamId }
+  var response = 0
+  for (participant in participants) {
+    response += participant.stats.kills
+  }
+  return response
+}
+
 /**
  * Get team stats
  */
-private fun teamStats(team: TeamStats): MatchTeamStats {
+private fun teamStats(match: Match, team: TeamStats): MatchTeamStats {
   return MatchTeamStats(
+          championKills = teamTotalChampionKills(match, team.teamId),
           baronKills = team.baronKills,
           dominionVictoryScore = team.dominionVictoryScore,
           dragonKills = team.dragonKills,
@@ -59,7 +69,7 @@ private fun matchTeams(match: Match): List<MatchTeam> {
     val matchItem = MatchTeam(
             teamId = team.teamId,
             win = isWin(team.win),
-            stats = teamStats(team),
+            stats = teamStats(match, team),
             bans = teamBans(team)
     )
     response.add(matchItem)
