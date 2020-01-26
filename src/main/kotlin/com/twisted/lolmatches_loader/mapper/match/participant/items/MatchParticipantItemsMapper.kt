@@ -5,8 +5,7 @@ import net.rithms.riot.api.endpoints.match.dto.ParticipantStats
 /**
  * Participant items
  */
-fun participantItems(stats: ParticipantStats)
-  = listOf(
+fun participantItems(stats: ParticipantStats) = listOf(
         stats.item0,
         stats.item1,
         stats.item2,

@@ -6,8 +6,8 @@ import com.twisted.dto.match.participant.events.MatchParticipantEvents
 import com.twisted.dto.match.participant.stats.MatchParticipantKDA
 import com.twisted.dto.summoner.GetSummonerRequest
 import com.twisted.dto.summoner.SummonerDocument
-import com.twisted.enum.getMapGeyFromValue
 import com.twisted.enum.common.ListRegions
+import com.twisted.enum.getMapGeyFromValue
 import com.twisted.enum.match.participants.MatchParticipantsLane
 import com.twisted.enum.match.participants.MatchParticipantsRole
 import com.twisted.lolmatches_loader.mapper.match.participant.events.matchParticipantEventMapper
