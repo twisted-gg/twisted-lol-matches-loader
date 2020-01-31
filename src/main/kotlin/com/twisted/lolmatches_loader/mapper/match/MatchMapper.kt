@@ -91,7 +91,7 @@ fun matchToDocument(match: Match, matchTimeline: MatchTimeline): MatchDocument {
           match_break = badMatch,
           game_id = match.gameId,
           creation = match.gameCreation,
-          duration = match.gameDuration,
+          duration = secondsToMs(match.gameDuration),
           mode = getMapGeyFromValue(MatchGameMode, match.gameMode),
           type = getMapGeyFromValue(MatchGameTypes, match.gameType),
           version = match.gameVersion,

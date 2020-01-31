@@ -20,3 +20,4 @@ fun isWin(value: String): Boolean {
   return value == condition
 }
 
+fun secondsToMs(seconds: Long) = seconds * 1000
