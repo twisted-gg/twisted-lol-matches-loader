@@ -53,9 +53,7 @@ fun getSummonerList(match: Match): List<SummonerDocument> {
             accountID = participant.player.currentAccountId
     ))
   }
-  return runBlocking {
-    summonersService.getSummonerList(params)
-  }
+  return summonersService.getSummonerList(params).get().users
 }
 
 private fun mapInstance(match: Match, matchFrames: MatchTimeline, summoner: SummonerDocument, participantId: Int, events: MatchParticipantEvents): MatchParticipant {

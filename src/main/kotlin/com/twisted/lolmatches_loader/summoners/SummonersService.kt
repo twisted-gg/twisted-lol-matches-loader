@@ -1,5 +1,6 @@
 package com.twisted.lolmatches_loader.summoners
 
+import com.twisted.dto.summoner.GetMultipleSummoner
 import com.twisted.dto.summoner.GetSummonerRequest
 import com.twisted.dto.summoner.SummonerDocument
 import com.twisted.lolmatches_loader.errors.NotFoundException
@@ -27,5 +28,18 @@ class SummonersService {
   }
 
   // Parallel requests
-  fun getSummonerList(params: List<GetSummonerRequest>) = params.map { param -> getSummoner(param) }.map { v -> v.get() }
+  @Async
+  fun getSummonerList(params: List<GetSummonerRequest>): CompletableFuture<GetMultipleSummoner> {
+    var url = UriComponentsBuilder.fromHttpUrl("${this.baseUrl}/multi")
+            .queryParam("region", params[0].region)
+    for (param in params) {
+      url
+              .queryParam("summonerName", param.summonerName)
+              .queryParam("accountID", param.accountID)
+    }
+    return CompletableFuture.supplyAsync {
+      RestTemplate().getForObject<GetMultipleSummoner>(url.toUriString(), GetMultipleSummoner::class.java)
+              ?: throw NotFoundException()
+    }
+  }
 }
