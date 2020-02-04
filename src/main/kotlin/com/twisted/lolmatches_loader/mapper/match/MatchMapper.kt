@@ -3,14 +3,22 @@ package com.twisted.lolmatches_loader.mapper.match
 import com.twisted.dto.match.team.MatchTeam
 import com.twisted.dto.match.team.MatchTeamBans
 import com.twisted.dto.match.team.MatchTeamStats
+import com.twisted.dto.summoner.GetSummonerRequest
+import com.twisted.dto.summoner.SummonerDocument
+import com.twisted.enum.common.ListRegions
 import com.twisted.enum.getMapGeyFromValue
 import com.twisted.enum.match.MatchGameMode
 import com.twisted.enum.match.MatchGameTypes
 import com.twisted.lolmatches_loader.entity.match.MatchDocument
+import com.twisted.lolmatches_loader.mapper.match.league.matchLeagueMapper
 import com.twisted.lolmatches_loader.mapper.match.participant.matchParticipants
+import com.twisted.lolmatches_loader.summoners.SummonersService
 import net.rithms.riot.api.endpoints.match.dto.Match
 import net.rithms.riot.api.endpoints.match.dto.MatchTimeline
 import net.rithms.riot.api.endpoints.match.dto.TeamStats
+
+
+private val summonersService = SummonersService()
 
 private fun teamTotalChampionKills(match: Match, teamId: Int): Int {
   val participants = match.participants.filter { p -> p.teamId == teamId }
@@ -78,12 +86,29 @@ private fun matchTeams(match: Match): List<MatchTeam> {
 }
 
 /**
+ * Get summoners list from service
+ */
+private fun getSummonerList(match: Match): List<SummonerDocument> {
+  val params = mutableListOf<GetSummonerRequest>()
+  for (participant in match.participantIdentities) {
+    params.add(GetSummonerRequest(
+            region = ListRegions.valueOf(match.platformId),
+            summonerName = participant.player.summonerName,
+            accountID = participant.player.currentAccountId
+    ))
+  }
+  return summonersService.getSummonerList(params).get().users
+}
+
+/**
  * Match to document
  * Convert match object to database document
  */
 fun matchToDocument(match: Match, matchTimeline: MatchTimeline): MatchDocument {
-  val participants = matchParticipants(match, matchTimeline)
+  val participantsList = getSummonerList(match)
+  val participants = matchParticipants(participantsList, match, matchTimeline)
   val badMatch = participants.count() == 0
+  val league = matchLeagueMapper(match.queueId, participantsList)
   return MatchDocument(
           region = match.platformId,
           framesInterval = matchTimeline.frameInterval,
@@ -99,6 +124,7 @@ fun matchToDocument(match: Match, matchTimeline: MatchTimeline): MatchDocument {
           queue = match.queueId,
           season = match.seasonId,
           teams = matchTeams(match),
-          participants = participants
+          participants = participants,
+          league = league
   )
 }

@@ -4,9 +4,7 @@ import com.twisted.dto.errors.InvalidEnum
 import com.twisted.dto.match.participant.MatchParticipant
 import com.twisted.dto.match.participant.events.MatchParticipantEvents
 import com.twisted.dto.match.participant.stats.MatchParticipantKDA
-import com.twisted.dto.summoner.GetSummonerRequest
 import com.twisted.dto.summoner.SummonerDocument
-import com.twisted.enum.common.ListRegions
 import com.twisted.enum.getMapGeyFromValue
 import com.twisted.enum.match.participants.MatchParticipantsLane
 import com.twisted.enum.match.participants.MatchParticipantsRole
@@ -16,12 +14,8 @@ import com.twisted.lolmatches_loader.mapper.match.participant.items.participantI
 import com.twisted.lolmatches_loader.mapper.match.participant.perks.participantPerks
 import com.twisted.lolmatches_loader.mapper.match.participant.spells.getParticipantSpells
 import com.twisted.lolmatches_loader.mapper.match.participant.stats.participantStats
-import com.twisted.lolmatches_loader.summoners.SummonersService
-import kotlinx.coroutines.runBlocking
 import net.rithms.riot.api.endpoints.match.dto.*
 import org.bson.types.ObjectId
-
-private val summonersService = SummonersService()
 
 /**
  * Participant KDA
@@ -43,18 +37,6 @@ private fun participantKDA(stats: ParticipantStats): MatchParticipantKDA {
 private fun getParticipantDetails(match: Match, participantId: Int): Participant =
         match.participants.find { p -> p.participantId == participantId }
                 ?: throw Exception()
-
-fun getSummonerList(match: Match): List<SummonerDocument> {
-  val params = mutableListOf<GetSummonerRequest>()
-  for (participant in match.participantIdentities) {
-    params.add(GetSummonerRequest(
-            region = ListRegions.valueOf(match.platformId),
-            summonerName = participant.player.summonerName,
-            accountID = participant.player.currentAccountId
-    ))
-  }
-  return summonersService.getSummonerList(params).get().users
-}
 
 private fun mapInstance(match: Match, matchFrames: MatchTimeline, summoner: SummonerDocument, participantId: Int, events: MatchParticipantEvents): MatchParticipant {
   val participant = getParticipantDetails(match = match, participantId = participantId)
@@ -89,18 +71,17 @@ fun findSummonerByParticipant(participant: ParticipantIdentity, list: List<Summo
 /**
  * Get match participants
  */
-fun matchParticipants(match: Match, matchFrames: MatchTimeline): List<MatchParticipant> =
+fun matchParticipants(participants: List<SummonerDocument>, match: Match, matchFrames: MatchTimeline): List<MatchParticipant> =
         try {
           val response = mutableListOf<MatchParticipant>()
-          val participantsList = getSummonerList(match)
           for (participant in match.participantIdentities) {
-            val summoner = findSummonerByParticipant(participant, participantsList)
+            val summoner = findSummonerByParticipant(participant, participants)
                     ?: throw Exception()
             val events = matchParticipantEventMapper(
                     match = match,
                     frames = matchFrames,
                     participantId = participant.participantId,
-                    participants = participantsList
+                    participants = participants
             )
             response.add(mapInstance(
                     match = match,
